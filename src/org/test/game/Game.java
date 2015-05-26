@@ -8,6 +8,8 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+import javafx.application.Application;
+
 import javax.swing.JFrame;
 
 import org.test.game.entities.Player;

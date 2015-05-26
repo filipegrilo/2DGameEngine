@@ -3,13 +3,14 @@ package org.test.entities.ability;
 import org.test.enums.Direction;
 import org.test.game.entities.Player;
 import org.test.gfx.Screen;
+import org.test.sound.Sound;
 
 public abstract class PlayerAbility extends Ability{
 	Player player;
 	Direction direction;
 	
-	public PlayerAbility(String name, Player player, int cooldown, int range, int speed) {
-		super(name, cooldown, range, speed);
+	public PlayerAbility(String name, Player player, int cooldown, int range, int speed,Sound sound) {
+		super(name, cooldown, range, speed, sound);
 		this.player = player;
 	}
 	

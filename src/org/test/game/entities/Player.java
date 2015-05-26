@@ -16,10 +16,12 @@ import org.test.level.tiles.Tile;
 import org.test.menu.Hotbar;
 import org.test.menu.Inventory;
 import org.test.menu.Menu;
+import org.test.sound.Sound;
 import org.test.time.Time;
 
 public class Player extends Mob{
 	private final double DAMAGE_TICK = 0.5;
+	private final double BLIND_TICK = 2;
 	
 	private InputHandler input;
 	private HealthDisplay healthDisplay;
@@ -34,9 +36,13 @@ public class Player extends Mob{
 	private int color = Colors.get(-1, 111, 145, 543);
 	private int scale = 1;
 	private int tickCount = 0;
+	
 	private Time damageTimer;
+	private Time blindTimer;
 	
 	protected boolean isSwimming = false;
+	protected boolean isWalking = false;
+	protected boolean isBlinded = false;
 	private boolean showMessage = false;
 	
 	public Player(Level level, int x, int y, InputHandler input) throws CloneNotSupportedException{
@@ -50,64 +56,25 @@ public class Player extends Mob{
 																								   Colors.get(000, 500, 333, 555)},
 																						 new int[]{0 + 7 * 32, 1 + 7 * 32});
 		direction = Direction.DOWN;
+		Sound.background.playLoop();
 	}
 	
 	public void tick() {
+		soundControl();
+		
 		if(input.get("Inventory").isReleased()) inventory.toggle();
 		
 		if(inventory.show) inventory.tick(input);
 		else{
-			int xa = 0;
-			int ya = 0;
+			Tile curTile = level.getTile(x >> 3, y >> 3);
 			
-			if(input.get("Up").isPressed()){
-				ya--;
-				direction = Direction.UP;
-			}
-			if(input.get("Down").isPressed()){
-				ya++;
-				direction = Direction.DOWN;
-			}
-			if(input.get("Left").isPressed()){
-				xa--;
-				direction = Direction.LEFT;
-			}
-			if(input.get("Right").isPressed()){
-				xa++;
-				direction = Direction.RIGHT;
-			}
-			
-			if(xa != 0 && ya != 0){
-				if(xa > 0){
-					if(ya > 0) direction = Direction.DOWN_RIGHT;
-					if(ya < 0) direction = Direction.UP_RIGHT;
-				}else if(xa < 0){
-					if(ya > 0) direction = Direction.DOWN_LEFT;
-					if(ya < 0) direction = Direction.UP_LEFT;
-				}
-			}
-			
-			//TODO: fix bug when direction = DOWN_RIGHT with ability1
-			if(input.get("Abillity1").isReleased()) fireBall.activate(x, y, direction);
-			if(input.get("Abillity2").isReleased()) dash.activate();
+			movementControl(curTile);
+			abilityControl();
+			damageControl(curTile);
+			effectsControl();
 			
 			if(input.get("Msg").isPressed()) showMessage = true;
 			else showMessage = false;
-			
-			if(xa != 0 || ya != 0){
-				move(xa,  ya);
-				isMoving = true;
-			}else{
-				isMoving = false;
-			}
-			if(level.getTile(this.x >> 3, this.y >> 3).getId() == 3){
-				isSwimming = true;
-			}
-			if(isSwimming && level.getTile(this.x >> 3, this.y >> 3).getId() != 3){
-				isSwimming = false;
-			}
-			
-			damageControl();
 			
 			healthDisplay.tick();
 			abilityDisplay.tick();
@@ -120,6 +87,109 @@ public class Player extends Mob{
 	}
 
 	public void render(Screen screen) {
+		playerRender(screen);
+		
+		fireBall.render(screen);
+		
+		healthDisplay.render(screen);
+		abilityDisplay.render(screen);
+		hotbar.render(screen);
+		inventory.render(screen);
+		
+		effectsRenderer(screen);
+	}
+	
+	private void soundControl(){
+		if(isWalking) Sound.walking.play();
+		if(isSwimming && isMoving) Sound.swimming.play();
+	}
+	
+	private void damageControl(Tile curTile){
+		if(damageTimer != null) damageTimer.tick();
+		
+		if(curTile.doesDamage()){
+			if(damageTimer == null){
+				health -= ((DamageAnimatedTile) curTile).getDamage();
+				damageTimer = new Time(DAMAGE_TICK);
+			}else{
+				if(damageTimer.isDone()){
+					damageTimer.reset();
+					Sound.hurt.play();
+					health -= ((DamageAnimatedTile) curTile).getDamage();
+				}
+			}
+		}else{
+			damageTimer = null;
+		}
+	}
+	
+	private void movementControl(Tile curTile){
+		int xa = 0;
+		int ya = 0;
+		
+		if(input.get("Up").isPressed()){
+			ya--;
+			direction = Direction.UP;
+		}
+		if(input.get("Down").isPressed()){
+			ya++;
+			direction = Direction.DOWN;
+		}
+		if(input.get("Left").isPressed()){
+			xa--;
+			direction = Direction.LEFT;
+		}
+		if(input.get("Right").isPressed()){
+			xa++;
+			direction = Direction.RIGHT;
+		}
+		
+		if(xa != 0 && ya != 0){
+			if(xa > 0){
+				if(ya > 0) direction = Direction.DOWN_RIGHT;
+				if(ya < 0) direction = Direction.UP_RIGHT;
+			}else if(xa < 0){
+				if(ya > 0) direction = Direction.DOWN_LEFT;
+				if(ya < 0) direction = Direction.UP_LEFT;
+			}
+		}
+		
+		if(xa != 0 || ya != 0){
+			move(xa,  ya);
+			isMoving = true;
+		}else{
+			isMoving = false;
+		}
+		
+		if(curTile.getId() == 3 || curTile.getId() == 4) isSwimming = true;
+		if(isSwimming && curTile.getId() != 3 && curTile.getId() != 4) isSwimming = false;
+		
+		if(!isSwimming && isMoving) isWalking = true;
+		else isWalking = false;
+	}
+
+	private void abilityControl(){
+		if(input.get("Abillity1").isReleased())fireBall.activate(x, y, direction);
+		if(input.get("Abillity2").isReleased()) dash.activate();
+	}
+	
+	private void effectsControl(){
+		if(blindTimer != null) blindTimer.tick();
+		
+		if(isBlinded){
+			if(blindTimer == null){
+				blindTimer = new Time(BLIND_TICK);
+			}
+			else{
+				if(blindTimer.isDone()){
+					isBlinded = false;
+					blindTimer = null;
+				}
+			}
+		}
+	}
+
+	private void playerRender(Screen screen){
 		int xTile = 0;
 		int yTile = 28;
 		int walkingSpeed = 4;
@@ -135,8 +205,6 @@ public class Player extends Mob{
 			Font.render("Hello", screen, xOffset - (5 * 8 / 2) + 4, yOffset - 10, Colors.get(-1, -1, -1, 500), 1);
 		}
 		
-		fireBall.render(screen);
-		
 		if(movingDir == 1) xTile += 2;
 		else if(movingDir > 1){
 			xTile += 4 + ((numSteps >> walkingSpeed) & 1) * 2;
@@ -145,21 +213,26 @@ public class Player extends Mob{
 		
 		if(isSwimming){
 			int waterColor = 0;
+			Tile curTile = level.getTile(x >> 3, y >> 3);
 			yOffset += 4;
 			
 			if(tickCount % 60 < 15){ 
-				waterColor = Colors.get(-1, -1, 225, -1);
+				if(curTile.getId() == 3) waterColor = Colors.get(-1, -1, 225, -1);
+				else waterColor = Colors.get(-1, -1, 520, -1);
 			}	
 			else if(15 <= tickCount % 60 && tickCount % 60 < 30){
 				yOffset--;
-				waterColor = Colors.get(-1, 225, 115, -1);
+				if(curTile.getId() == 3) waterColor = Colors.get(-1, 225, 115, -1);
+				else waterColor = Colors.get(-1, 520, 200, -1);
 			}	
 			else if(30 <= tickCount % 60 && tickCount % 60 < 45){
-				waterColor = Colors.get(-1, 115, -1, 225);
+				if(curTile.getId() == 3) waterColor = Colors.get(-1, 115, -1, 225);
+				else waterColor = Colors.get(-1, 200, -1, 520);
 			}	
 			else {
 				yOffset--;
-				waterColor = Colors.get(-1, 225, 115, -1);
+				if(curTile.getId() == 3) waterColor = Colors.get(-1, 225, 115, -1);
+				else waterColor = Colors.get(-1, 520, 200, -1);
 			}
 				
 			screen.render(xOffset, yOffset + 3, 0 + 27 * 32, waterColor, 0x00, 1);
@@ -173,30 +246,9 @@ public class Player extends Mob{
 			screen.render(xOffset + (modifier * flipBottom), yOffset + modifier, xTile + (yTile + 1) * 32, color, flipBottom, scale);
 			screen.render(xOffset+ modifier - (modifier * flipBottom), yOffset + modifier, (xTile + 1) + (yTile + 1) * 32, color, flipBottom, scale);
 		}
-		
-		healthDisplay.render(screen);
-		abilityDisplay.render(screen);
-		hotbar.render(screen);
-		inventory.render(screen);
 	}
-	
-	private void damageControl(){
-		if(damageTimer != null) damageTimer.tick();
-		
-		Tile curTile = level.getTile(x >> 3, y >> 3);
-		
-		if(curTile.doesDamage()){
-			if(damageTimer == null){
-				health -= ((DamageAnimatedTile) curTile).getDamage();
-				damageTimer = new Time(DAMAGE_TICK);
-			}else{
-				if(damageTimer.isDone()){
-					damageTimer.reset();
-					health -= ((DamageAnimatedTile) curTile).getDamage();
-				}
-			}
-		}else{
-			damageTimer = null;
-		}
+
+	private void effectsRenderer(Screen screen){
+		if(isBlinded) screen.render(screen.xOffset, screen.yOffset, 24 + 0 * 32, Colors.get(000, 000, 000, 000), 0x00, 100);
 	}
 }

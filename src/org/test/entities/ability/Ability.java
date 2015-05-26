@@ -1,14 +1,7 @@
 package org.test.entities.ability;
 
-import java.rmi.activation.ActivateFailedException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.test.enums.Direction;
-import org.test.game.entities.Player;
-import org.test.game.particles.BasicParticle;
-import org.test.game.particles.Particle;
 import org.test.gfx.Screen;
+import org.test.sound.Sound;
 import org.test.time.Time;
 
 public abstract class Ability {
@@ -24,13 +17,15 @@ public abstract class Ability {
 	protected String name;
 	private String message;
 	protected boolean renderMessage;
+	protected Sound sound;
 	
-	public Ability(String name, int cooldown, int range, int speed){
+	public Ability(String name, int cooldown, int range, int speed, Sound sound){
 		this.name = name;
 		this.cooldown = cooldown;
 		this.range = range;
 		this.speed = speed;
 		this.message = name + " in cooldown";
+		this.sound = sound;
 	}
 	
 	public abstract void tick();

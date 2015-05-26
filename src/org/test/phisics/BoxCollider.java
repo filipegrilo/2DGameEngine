@@ -3,31 +3,19 @@ package org.test.phisics;
 import org.test.level.Level;
 import org.test.level.tiles.Tile;
 //needs fixing
-public class BoxCollider {
-	private int x, y;
-	private int xOffset, yOffset;
+public class BoxCollider extends Collider{
 	private int width, height;
-	private Level level;
-	private boolean active = true;
 	
 	public BoxCollider(int x, int y, int width, int height, Level level){
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.level = level;
-		this.xOffset = 0;
-		this.yOffset = 0;
+		super(x, y, 0, 0, level, true);
+		this.width = width-1;
+		this.height = height-1;
 	}
 	
 	public BoxCollider(int x, int y, int xOffset, int yOffset, int width, int height, Level level){
-		this.x = x + xOffset;
-		this.y = y + yOffset;
-		this.xOffset = xOffset;
-		this.yOffset = yOffset;
+		super(x + xOffset, y + yOffset, xOffset, yOffset, level, true);
 		this.width = width-1;
 		this.height = height-1;
-		this.level = level;
 	}
 	
 	public void tick(int x, int y){
@@ -65,21 +53,5 @@ public class BoxCollider {
 		if(!lastTile.equals(newTile) && newTile.isSolid()) return true;
 		
 		return false;
-	}
-	
-	public void setX(int x){
-		this.x = x;
-	}
-	
-	public int getX(){
-		return x;
-	}
-	
-	public void setY(int y){
-		this.y = y;
-	}
-	
-	public int getY(){
-		return y;
 	}
 }

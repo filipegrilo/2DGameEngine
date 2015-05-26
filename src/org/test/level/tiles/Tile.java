@@ -11,7 +11,7 @@ public abstract class Tile {
 	public static final Tile STONE = new BasicSolidTile(1, 1, 0, false, Colors.get(-1, 333, -1, -1), 0xff555555);
 	public static final Tile GRASS = new BasicTile(2, 2, 0, false, Colors.get(-1, 131, 141, -1), 0xff00ff00);
 	public static final Tile WATER = new AnimatedTile(3, false, new int[][] {{0,  5}, {1, 5}, {2, 5}, {1, 5}}, Colors.get(-1, 004, 115, -1), 0xff0000ff, 500);
-	public static final Tile LAVA = new DamageAnimatedTile(4, 5, new int[][] {{0,  5}, {1, 5}, {2, 5}, {1, 5}} , Colors.get(-1, 510, 500, -1), 0xffff0000, 600);
+	public static final Tile LAVA = new DamageAnimatedTile(4, 5, new int[][] {{1, 5}, {2, 5}} , Colors.get(-1, 510, 500, -1), 0xffff0000, 600);
 	
 	protected byte id;
 	protected boolean solid;

@@ -3,13 +3,14 @@ package org.test.entities.ability;
 import org.test.enums.Direction;
 import org.test.game.particles.Particle;
 import org.test.gfx.Screen;
+import org.test.sound.Sound;
 import org.test.time.Time;
 
 public abstract class ProjetileAbility extends Ability{
 	Particle particle;
 	
-	public ProjetileAbility(String name, Particle particle, int cooldown, int range, int speed) {
-		super(name, cooldown, range, speed);
+	public ProjetileAbility(String name, Particle particle, int cooldown, int range, int speed, Sound sound) {
+		super(name, cooldown, range, speed, sound);
 		this.particle = particle;
 	}
 	
@@ -103,6 +104,7 @@ public abstract class ProjetileAbility extends Ability{
 			
 			ready = false;
 			active = true;
+			sound.play();
 			time = new Time(cooldown);
 			
 		}else{

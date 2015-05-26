@@ -3,6 +3,7 @@ package org.test.game.entities;
 import org.test.enums.Direction;
 import org.test.level.Level;
 import org.test.phisics.BoxCollider;
+import org.test.phisics.Collider;
 
 public abstract class Mob extends Entity{
 	protected int speed;
@@ -14,7 +15,7 @@ public abstract class Mob extends Entity{
 	protected int movingDir = 1;
 	protected int scale = 1;
 	
-	protected BoxCollider collider;
+	protected Collider collider;
 	
 	public Mob(Level level, String name, int x, int y, int speed, double health) {
 		super(level);
@@ -49,7 +50,7 @@ public abstract class Mob extends Entity{
 		return direction;
 	}
 	
-	public BoxCollider getCollider(){
+	public Collider getCollider(){
 		return collider;
 	}
 }
