@@ -7,8 +7,8 @@ public class AnimatedTile extends BasicTile{
 	private long lastIterationTime;
 	private int animationSwitchDelay;
 	
-	public AnimatedTile(int id, int[][] animationCoords, int tileColor, int levelColor, int animationSwitchDelay) {
-		super(id, animationCoords[0][0], animationCoords[0][1], tileColor, levelColor);
+	public AnimatedTile(int id, boolean doesDamage,int[][] animationCoords, int tileColor, int levelColor, int animationSwitchDelay) {
+		super(id,animationCoords[0][0], animationCoords[0][1], doesDamage, tileColor, levelColor);
 		this.animationTileCoords = animationCoords;
 		this.currentAnimationIndex = 0;
 		this.lastIterationTime = System.currentTimeMillis();

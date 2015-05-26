@@ -5,19 +5,22 @@ import org.test.level.Level;
 import org.test.phisics.BoxCollider;
 
 public abstract class Mob extends Entity{
+	protected int speed;
+	protected double health;
 	
 	protected String name;
-	protected int speed;
 	protected int numSteps = 0;
 	protected boolean isMoving;
 	protected int movingDir = 1;
 	protected int scale = 1;
+	
 	protected BoxCollider collider;
 	
-	public Mob(Level level, String name, int x, int y, int speed) {
+	public Mob(Level level, String name, int x, int y, int speed, double health) {
 		super(level);
 		this.name = name;
 		this.speed = speed;
+		this.health = health;
 		this.x = x;
 		this.y = y;
 		this.collider = new BoxCollider(x, y, 0, 0, 16, 16, level);

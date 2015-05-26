@@ -7,18 +7,22 @@ import org.test.entities.ability.FireBall;
 import org.test.enums.Direction;
 import org.test.game.Game;
 import org.test.game.InputHandler;
-import org.test.game.particles.Particle;
 import org.test.gfx.Colors;
 import org.test.gfx.Font;
 import org.test.gfx.Screen;
 import org.test.level.Level;
+import org.test.level.tiles.DamageAnimatedTile;
+import org.test.level.tiles.Tile;
 import org.test.menu.Hotbar;
 import org.test.menu.Inventory;
 import org.test.menu.Menu;
+import org.test.time.Time;
 
 public class Player extends Mob{
+	private final double DAMAGE_TICK = 0.5;
 	
 	private InputHandler input;
+	private HealthDisplay healthDisplay;
 	private Menu inventory;
 	private Hotbar hotbar;
 	private Display abilityDisplay;
@@ -30,13 +34,15 @@ public class Player extends Mob{
 	private int color = Colors.get(-1, 111, 145, 543);
 	private int scale = 1;
 	private int tickCount = 0;
+	private Time damageTimer;
 	
 	protected boolean isSwimming = false;
 	private boolean showMessage = false;
 	
 	public Player(Level level, int x, int y, InputHandler input) throws CloneNotSupportedException{
-		super(level, "Player", x, y, 1);
+		super(level, "Player", x, y, 1, 100);
 		this.input = input;
+		this.healthDisplay = new HealthDisplay(this, Game.WIDTH - 10 * (8 + 5) - 5, 5);
 		this.inventory = new Inventory("Inventory", 8, 8, Game.WIDTH - 20, Game.HEIGHT - 20);
 		this.hotbar = new Hotbar(3 * (Game.WIDTH / 4) - 5 * 15 / 2, Game.HEIGHT - 25);
 		this.abilityDisplay = new Display(Game.WIDTH / 4 - 5 * 15 / 2, Game.HEIGHT - 25, new Ability[]{fireBall, dash},
@@ -75,14 +81,13 @@ public class Player extends Mob{
 				if(xa > 0){
 					if(ya > 0) direction = Direction.DOWN_RIGHT;
 					if(ya < 0) direction = Direction.UP_RIGHT;
-				}
-				
-				if(xa < 0){
+				}else if(xa < 0){
 					if(ya > 0) direction = Direction.DOWN_LEFT;
 					if(ya < 0) direction = Direction.UP_LEFT;
 				}
 			}
 			
+			//TODO: fix bug when direction = DOWN_RIGHT with ability1
 			if(input.get("Abillity1").isReleased()) fireBall.activate(x, y, direction);
 			if(input.get("Abillity2").isReleased()) dash.activate();
 			
@@ -102,6 +107,9 @@ public class Player extends Mob{
 				isSwimming = false;
 			}
 			
+			damageControl();
+			
+			healthDisplay.tick();
 			abilityDisplay.tick();
 			fireBall.tick();
 			dash.tick();
@@ -143,14 +151,14 @@ public class Player extends Mob{
 				waterColor = Colors.get(-1, -1, 225, -1);
 			}	
 			else if(15 <= tickCount % 60 && tickCount % 60 < 30){
-				yOffset -= 1;
+				yOffset--;
 				waterColor = Colors.get(-1, 225, 115, -1);
 			}	
 			else if(30 <= tickCount % 60 && tickCount % 60 < 45){
 				waterColor = Colors.get(-1, 115, -1, 225);
 			}	
 			else {
-				yOffset -= 1;
+				yOffset--;
 				waterColor = Colors.get(-1, 225, 115, -1);
 			}
 				
@@ -166,8 +174,29 @@ public class Player extends Mob{
 			screen.render(xOffset+ modifier - (modifier * flipBottom), yOffset + modifier, (xTile + 1) + (yTile + 1) * 32, color, flipBottom, scale);
 		}
 		
+		healthDisplay.render(screen);
 		abilityDisplay.render(screen);
 		hotbar.render(screen);
 		inventory.render(screen);
+	}
+	
+	private void damageControl(){
+		if(damageTimer != null) damageTimer.tick();
+		
+		Tile curTile = level.getTile(x >> 3, y >> 3);
+		
+		if(curTile.doesDamage()){
+			if(damageTimer == null){
+				health -= ((DamageAnimatedTile) curTile).getDamage();
+				damageTimer = new Time(DAMAGE_TICK);
+			}else{
+				if(damageTimer.isDone()){
+					damageTimer.reset();
+					health -= ((DamageAnimatedTile) curTile).getDamage();
+				}
+			}
+		}else{
+			damageTimer = null;
+		}
 	}
 }

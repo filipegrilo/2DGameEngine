@@ -114,11 +114,8 @@ public abstract class ProjetileAbility extends Ability{
 	}
 	
 	protected boolean inRange() {
-		if(particle.getX() > particle.getSpawnX() + (range << 3)) return false;
-		if(particle.getX() < particle.getSpawnX() - (range << 3)) return false;
-		if(particle.getY() > particle.getSpawnY() + (range << 3)) return false;
-		if(particle.getY() < particle.getSpawnY() - (range << 3)) return false;
-		return true;
+		if(Math.pow(particle.getX() - particle.getSpawnX(), 2) + Math.pow(particle.getY() - particle.getSpawnY(), 2) <= (range << 3) * (range << 3)) return true;
+		return false;
 	}
 	
 	public abstract void tick();

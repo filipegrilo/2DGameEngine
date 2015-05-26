@@ -35,7 +35,7 @@ public class MainMenu extends Menu {
 			
 		};
 		yPos += yOffsetIncrement;
-		menuItems[1] = new MenuItem("Change Keys", xPos - (9 * 8 / 2), y + yPos, textColor){
+		menuItems[1] = new MenuItem("Save Keys", xPos - (9 * 8 / 2), y + yPos, textColor){
 
 			public void onEnter() {
 				input.saveKeys();

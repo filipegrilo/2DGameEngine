@@ -8,8 +8,8 @@ public class BasicTile extends Tile{
 	protected int tileId;
 	protected int tileColor;
 	
-	public BasicTile(int id, int x, int y, int tileColor, int levelColor) {
-		super(id, false, false, levelColor);
+	public BasicTile(int id, int x, int y, boolean doesDamage, int tileColor, int levelColor) {
+		super(id, false, false, doesDamage, levelColor);
 		this.tileId = x + y * 32;
 		this.tileColor = tileColor;
 	}

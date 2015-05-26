@@ -8,13 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.omg.PortableServer.ID_ASSIGNMENT_POLICY_ID;
+
 public class InputHandler implements KeyListener{
+	private final int size = 21;
 	private static final String path = InputHandler.class.getResource("/cfg/keys.txt").getFile().replaceAll("%20", " ").substring(1);
 	private Map<String, Key> keys;
 	
 	public InputHandler(Game game){
 		game.addKeyListener(this);
-		
 		loadKeys();
 	}
 	
@@ -99,6 +101,8 @@ public class InputHandler implements KeyListener{
 				keys.put(keyName, new Key(keyCode));
 			}
 			
+			if(keys.size() != size) throw new Exception("Invalid Keys");
+			
 			System.out.println("Keys loaded");
 			
 			sc.close();
@@ -112,7 +116,7 @@ public class InputHandler implements KeyListener{
 			keys.put("Right", new Key(KeyEvent.VK_RIGHT));
 			keys.put("Msg", new Key(KeyEvent.VK_ENTER));
 			keys.put("Menu", new Key(KeyEvent.VK_ESCAPE));
-			keys.put("Inventory", new Key(KeyEvent.VK_E));
+			keys.put("Inventory", new Key(KeyEvent.VK_F));
 			keys.put("Inventory1", new Key(KeyEvent.VK_1));
 			keys.put("Inventory2", new Key(KeyEvent.VK_2));
 			keys.put("Inventory3", new Key(KeyEvent.VK_3));

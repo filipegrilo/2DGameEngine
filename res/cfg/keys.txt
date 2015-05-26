@@ -16,6 +16,6 @@ Inventory4=52
 Abillity2=87
 Inventory5=53
 Abillity3=69
-Inventory=69
+Inventory=70
 Abillity4=82
 Prev Item=65
