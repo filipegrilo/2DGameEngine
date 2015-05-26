@@ -101,7 +101,10 @@ public class Player extends Mob{
 	
 	private void soundControl(){
 		if(isWalking) Sound.walking.play();
+		else Sound.walking.stop();
+		
 		if(isSwimming && isMoving) Sound.swimming.play();
+		else Sound.swimming.stop();
 	}
 	
 	private void damageControl(Tile curTile){
