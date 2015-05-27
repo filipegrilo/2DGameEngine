@@ -8,6 +8,7 @@ import javax.sound.sampled.FloatControl;
 public class Sound implements Cloneable{
 	private Clip audioClip;
 	private boolean firstPlay = true;
+	public static boolean soundActive = false;
 	
 	public static Sound background = new Sound("/sound/Background.wav", -10.0f);
 	
@@ -45,6 +46,8 @@ public class Sound implements Cloneable{
 	}
 	
 	public void play(){
+		if(!soundActive) return;
+		
 		if(firstPlay){
 			firstPlay = false;
 			audioClip.start();

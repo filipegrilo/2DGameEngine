@@ -10,15 +10,19 @@ public class MainMenu extends Menu {
 	private int selectedColor;
 	private int textColor;
 	private MenuItem[] menuItems;
+	private SoundMenu soundMenu;
 	
 	public MainMenu(String name, int x, int y, int width, int height, int textColor, int selectedColor) {
 		super(name, x, y, width, height, Colors.get(-1, 000, 555, -1), Colors.get(-1, -1, -1, 222));
 		this.textColor = textColor;
 		this.selectedColor = selectedColor;
+		this.soundMenu = new SoundMenu("Sound", x, y, width, height, textColor, selectedColor);
 	}
 	
 	public void createMenuItems(InputHandler input){
-		int size = 3;
+		soundMenu.createMenuItems(input);
+		
+		int size = 4;
 		int width = getWidth();
 		int height = getHeight();
 		int yPos = 20;
@@ -43,7 +47,16 @@ public class MainMenu extends Menu {
 			
 		};
 		yPos += yOffsetIncrement;
-		menuItems[2] = new MenuItem("Exit", xPos - (4 * 8 / 2), y + yPos, textColor){
+		menuItems[2] = new MenuItem("Sound Options", xPos - (13 * 8 / 2), y + yPos, textColor){
+
+			public void onEnter() {
+				soundMenu.resetSelected();
+				soundMenu.show = true;
+			}
+			
+		};
+		yPos += yOffsetIncrement;
+		menuItems[3] = new MenuItem("Exit", xPos - (4 * 8 / 2), y + yPos, textColor){
 
 			@Override
 			public void onEnter() {
@@ -57,19 +70,23 @@ public class MainMenu extends Menu {
 	
 	public void tick(InputHandler input) {
 		if(show){
-			if(input.get("Menu NavDown").isReleased()){
-				selected++;
+			if(soundMenu.show){
+				soundMenu.tick(input);
+			}else{
+				if(input.get("Menu NavDown").isReleased()){
+					selected++;
+					
+					if(selected > menuItems.length-1) selected = 0;
+				}
 				
-				if(selected > menuItems.length-1) selected = 0;
-			}
-			
-			if(input.get("Menu NavUp").isReleased()){
-				selected--;
+				if(input.get("Menu NavUp").isReleased()){
+					selected--;
+					
+					if(selected < 0) selected = menuItems.length-1;
+				}
 				
-				if(selected < 0) selected = menuItems.length-1;
+				if(input.get("Enter").isReleased()) menuItems[selected].onEnter();
 			}
-			
-			if(input.get("Enter").isReleased()) menuItems[selected].onEnter();
 		}
 	}
 	
@@ -77,11 +94,15 @@ public class MainMenu extends Menu {
 		if(show){
 			renderBackground(screen);
 			
-			for(int i=0; i < menuItems.length; i++){
-				if(i == selected) menuItems[i].setColor(selectedColor);
-				else menuItems[i].setColor(textColor);
-				
-				menuItems[i].render(screen);
+			if(soundMenu.show){
+				soundMenu.render(screen);
+			}else{
+				for(int i=0; i < menuItems.length; i++){
+					if(i == selected) menuItems[i].setColor(selectedColor);
+					else menuItems[i].setColor(textColor);
+					
+					menuItems[i].render(screen);
+				}
 			}
 		}
 	}

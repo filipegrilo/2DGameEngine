@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 
 import org.test.game.entities.Player;
 import org.test.gfx.Colors;
+import org.test.gfx.Font;
 import org.test.gfx.Screen;
 import org.test.gfx.SpriteSheet;
 import org.test.items.Item;
@@ -162,6 +163,11 @@ public class Game extends Canvas implements Runnable{
 		
 		if(mainMenu.show) mainMenu.render(screen);
 		
+		if(player.isDead()){
+			screen.render(screen.xOffset, screen.yOffset, 24 + 0 * 32, Colors.get(000, 000, 000, 000), 0x00, 100);
+			Font.render("Game Over", screen,screen.xOffset + Game.WIDTH / 2 - (9 * 8 / 2), screen.yOffset + Game.HEIGHT / 2 - 8 / 2, Colors.get(-1, -1, -1, 555), 1);
+		}
+		
 		for(int y=0; y < screen.height; y++){
 			for(int x=0; x < screen.width; x++){
 				int colorCode = screen.pixels[x+y * screen.width];
@@ -178,14 +184,18 @@ public class Game extends Canvas implements Runnable{
 	public void tick(){
 		tickCount++;
 		
-		if(input.get("Menu").isReleased()){
-			mainMenu.toggle();
-			mainMenu.resetSelected();
-		}
-		
-		if(mainMenu.show) mainMenu.tick(input);
-		else{
-			level.tick();
+		if(!player.isDead()){
+			if(input.get("Menu").isReleased()){
+				mainMenu.toggle();
+				mainMenu.resetSelected();
+			}
+			
+			if(mainMenu.show) mainMenu.tick(input);
+			else{
+				level.tick();
+			}
+		}else{
+			if(input.get("Enter").isPressed()) System.exit(0);
 		}
 	}
 	

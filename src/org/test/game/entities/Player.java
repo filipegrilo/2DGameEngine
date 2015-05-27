@@ -43,6 +43,7 @@ public class Player extends Mob{
 	protected boolean isSwimming = false;
 	protected boolean isWalking = false;
 	protected boolean isBlinded = false;
+	protected boolean isDead = false;
 	private boolean showMessage = false;
 	
 	public Player(Level level, int x, int y, InputHandler input) throws CloneNotSupportedException{
@@ -100,6 +101,11 @@ public class Player extends Mob{
 	}
 	
 	private void soundControl(){
+		if(!Sound.soundActive) Sound.background.stop();
+		else{
+			if(!Sound.background.isActive()) Sound.background.playLoop();
+		}
+		
 		if(isWalking) Sound.walking.play();
 		else Sound.walking.stop();
 		
@@ -124,6 +130,8 @@ public class Player extends Mob{
 		}else{
 			damageTimer = null;
 		}
+		
+		if(health <= 0) isDead = true;
 	}
 	
 	private void movementControl(Tile curTile){
@@ -253,5 +261,9 @@ public class Player extends Mob{
 
 	private void effectsRenderer(Screen screen){
 		if(isBlinded) screen.render(screen.xOffset, screen.yOffset, 24 + 0 * 32, Colors.get(000, 000, 000, 000), 0x00, 100);
+	}
+	
+	public boolean isDead(){
+		return isDead;
 	}
 }
