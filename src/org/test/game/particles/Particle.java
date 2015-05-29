@@ -54,7 +54,7 @@ public abstract class Particle implements Cloneable{
 		this.spawnY = y;
 		this.x = x;
 		this.y = y;
-		this.collider = new BoxCollider(x, y, 8, 8, Game.level);
+		this.collider = new BoxCollider(x, y, 8, 8, Game.level, this);
 	}
 	
 	public int getSpawnX(){

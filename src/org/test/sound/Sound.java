@@ -19,6 +19,7 @@ public class Sound implements Cloneable{
 	public static Sound dash = new Sound("/sound/Dash.wav", 6.0f);
 	
 	public static Sound hurt = new Sound("/sound/Hurt.wav", 6.0f);
+	public static Sound heal = new Sound("/sound/Heal.wav", 6.0f);
 	
 	private Sound(String path){
 		try {
@@ -72,7 +73,12 @@ public class Sound implements Cloneable{
 		return audioClip.isActive();
 	}
 	
-	public Object clone() throws CloneNotSupportedException{
-		return super.clone();
+	public Object clone(){
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

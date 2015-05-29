@@ -1,6 +1,8 @@
 package org.test.game.entities;
 
 import org.test.enums.Direction;
+import org.test.game.Game;
+import org.test.items.Item;
 import org.test.level.Level;
 import org.test.phisics.BoxCollider;
 import org.test.phisics.Collider;
@@ -24,13 +26,12 @@ public abstract class Mob extends Entity{
 		this.health = health;
 		this.x = x;
 		this.y = y;
-		this.collider = new BoxCollider(x, y, 0, 0, 16, 16, level);
 	}
 	
 	public void move(int xa, int ya){
 		numSteps++;
-		
-		if(!collider.hasCollided(xa, ya)){
+	
+		if(!collider.hasCollided(xa, ya) && collider.getColisionObject() == null){
 			if(ya < 0) movingDir = 0;
 			else if(ya > 0) movingDir = 1;
 			else if(xa < 0) movingDir = 2;

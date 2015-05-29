@@ -7,8 +7,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-
-import javafx.application.Application;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -20,6 +20,7 @@ import org.test.gfx.SpriteSheet;
 import org.test.items.Item;
 import org.test.level.Level;
 import org.test.menu.MainMenu;
+import org.test.phisics.Collider;
 
 public class Game extends Canvas implements Runnable{
 	
@@ -29,6 +30,8 @@ public class Game extends Canvas implements Runnable{
 	public static final int HEIGHT = WIDTH / 12 * 9;
 	public static final int SCALE = 4;
 	public static final String NAME = "Game";
+	
+	private final int NUM_HEALS = 4; 
 	
 	private JFrame frame;
 	
@@ -44,6 +47,8 @@ public class Game extends Canvas implements Runnable{
 	public MainMenu mainMenu;
 	public static Level level;
 	public Player player;
+	
+	public static List<Collider> colliders = new ArrayList<Collider>();
 	
 	public Game(){
 		setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
@@ -85,7 +90,20 @@ public class Game extends Canvas implements Runnable{
 		level = new Level("/Levels/WaterLevelTest.png");
 		player = new Player(level, 10, 10, input);
 		level.addEntity(player);
-		level.addItem((Item)Item.chest.clone(), 20, 20);
+		initItems();
+	}
+	
+	private void initItems() throws CloneNotSupportedException{
+		level.addItem((Item)Item.chest.clone(), 30, 30);
+		
+		for(int i=0; i < NUM_HEALS; i++){
+			Item tmp = (Item)Item.health.clone();
+			tmp.resetCollider();
+			do{
+				tmp.setXY((int)(Math.random() * ((Game.level.width << 3) - 16) + 1), (int)(Math.random() * ((Game.level.height << 3) - 16) + 1));
+			}while(level.getTile(tmp.getX(), tmp.getY()).getId() == 1);
+			level.addItem(tmp,-1, -1);
+		}
 	}
 	
 	public synchronized void start() {

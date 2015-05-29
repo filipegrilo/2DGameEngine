@@ -10,18 +10,23 @@ import org.test.game.InputHandler;
 import org.test.gfx.Colors;
 import org.test.gfx.Font;
 import org.test.gfx.Screen;
+import org.test.items.HealthRandomItem;
+import org.test.items.Item;
 import org.test.level.Level;
 import org.test.level.tiles.DamageAnimatedTile;
 import org.test.level.tiles.Tile;
 import org.test.menu.Hotbar;
 import org.test.menu.Inventory;
 import org.test.menu.Menu;
+import org.test.phisics.BoxCollider;
 import org.test.sound.Sound;
 import org.test.time.Time;
 
 public class Player extends Mob{
 	private final double DAMAGE_TICK = 0.5;
 	private final double BLIND_TICK = 2;
+	
+	private final double MAX_HEALTH = 100;
 	
 	private InputHandler input;
 	private HealthDisplay healthDisplay;
@@ -48,6 +53,8 @@ public class Player extends Mob{
 	
 	public Player(Level level, int x, int y, InputHandler input) throws CloneNotSupportedException{
 		super(level, "Player", x, y, 1, 100);
+		this.collider = new BoxCollider(x, y, 0, 0, 16, 16, level, this);
+		Game.colliders.add(collider);
 		this.input = input;
 		this.healthDisplay = new HealthDisplay(this, Game.WIDTH - 10 * (8 + 5) - 5, 5);
 		this.inventory = new Inventory("Inventory", 8, 8, Game.WIDTH - 20, Game.HEIGHT - 20);
@@ -162,6 +169,23 @@ public class Player extends Mob{
 			}else if(xa < 0){
 				if(ya > 0) direction = Direction.DOWN_LEFT;
 				if(ya < 0) direction = Direction.UP_LEFT;
+			}
+		}
+		
+		if(collider.hasCollided(xa, ya, speed)){
+			try{
+				Item item = (Item)(collider.getColisionObject());
+				
+				if(item.getId() == 4){
+					Game.colliders.remove(item.getCollider());
+					Game.level.items.remove(item);
+					HealthRandomItem healItem = (HealthRandomItem) item;
+					healItem.getSound().play();
+					health += healItem.getHealAmmount();
+					if(health > MAX_HEALTH) health = MAX_HEALTH;
+				}
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 		}
 		

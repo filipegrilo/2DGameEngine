@@ -2,7 +2,6 @@ package org.test.menu;
 
 import org.test.game.InputHandler;
 import org.test.gfx.Colors;
-import org.test.gfx.Font;
 import org.test.gfx.Screen;
 
 public class Inventory extends Menu{
@@ -19,8 +18,6 @@ public class Inventory extends Menu{
 
 	public void render(Screen screen) {
 		if(show){
-			int xOffset = x + screen.xOffset + width / 2 - (name.length() * 8 / 2) + 2; 
-			
 			renderBackground(screen);
 		}
 	}

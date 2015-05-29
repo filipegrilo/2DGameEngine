@@ -1,8 +1,5 @@
 package org.test.menu;
 
-import java.awt.List;
-
-import org.test.game.Game;
 import org.test.game.InputHandler;
 import org.test.gfx.Colors;
 import org.test.gfx.Font;
