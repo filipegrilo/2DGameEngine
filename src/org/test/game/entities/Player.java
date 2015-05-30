@@ -4,6 +4,7 @@ import org.test.entities.ability.Ability;
 import org.test.entities.ability.Dash;
 import org.test.entities.ability.Display;
 import org.test.entities.ability.FireBall;
+import org.test.entities.ability.Trail;
 import org.test.enums.Direction;
 import org.test.game.Game;
 import org.test.game.InputHandler;
@@ -36,6 +37,7 @@ public class Player extends Mob{
 	
 	private FireBall fireBall = new FireBall();
 	private Dash dash = new Dash(this);
+	private Trail trail = new Trail(this);
 	
 	public int startX, startY;
 	private int color = Colors.get(-1, 111, 145, 543);
@@ -59,10 +61,11 @@ public class Player extends Mob{
 		this.healthDisplay = new HealthDisplay(this, Game.WIDTH - 10 * (8 + 5) - 5, 5);
 		this.inventory = new Inventory("Inventory", 8, 8, Game.WIDTH - 20, Game.HEIGHT - 20);
 		this.hotbar = new Hotbar(3 * (Game.WIDTH / 4) - 5 * 15 / 2, Game.HEIGHT - 25);
-		this.abilityDisplay = new Display(Game.WIDTH / 4 - 5 * 15 / 2, Game.HEIGHT - 25, new Ability[]{fireBall, dash},
+		this.abilityDisplay = new Display(Game.WIDTH / 4 - 5 * 15 / 2, Game.HEIGHT - 25, new Ability[]{fireBall, dash, trail},
 																						 new int[]{Colors.get(000, 500, 531, 540),
-																								   Colors.get(000, 500, 333, 555)},
-																						 new int[]{0 + 7 * 32, 1 + 7 * 32});
+																								   Colors.get(000, 500, 333, 555),
+																								   Colors.get(000, 510, 500, 333)},
+																						 new int[]{0 + 7 * 32, 1 + 7 * 32,  2 + 7 * 32});
 		direction = Direction.DOWN;
 		Sound.background.playLoop();
 	}
@@ -88,6 +91,7 @@ public class Player extends Mob{
 			abilityDisplay.tick();
 			fireBall.tick();
 			dash.tick();
+			trail.tick();
 			hotbar.tick(input);
 		}
 		
@@ -204,8 +208,9 @@ public class Player extends Mob{
 	}
 
 	private void abilityControl(){
-		if(input.get("Abillity1").isReleased())fireBall.activate(x, y, direction);
+		if(input.get("Abillity1").isReleased())	fireBall.activate(x, y, direction);
 		if(input.get("Abillity2").isReleased()) dash.activate();
+		if(input.get("Abillity3").isReleased()) trail.activate();
 	}
 	
 	private void effectsControl(){

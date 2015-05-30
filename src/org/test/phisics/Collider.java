@@ -22,7 +22,7 @@ public abstract class Collider<T> implements Cloneable{
 	}
 	
 	public abstract void tick(int x, int y);
-	public abstract boolean hasCollided(int xa, int ya, int speed);
+	public abstract boolean hasCollided(int xa, int ya, double speed);
 	public abstract boolean hasCollided(int xa, int ya);
 	
 	public void setX(int x){

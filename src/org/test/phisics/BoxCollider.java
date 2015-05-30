@@ -22,7 +22,7 @@ public class BoxCollider<T> extends Collider<T>{
 		this.y = y + yOffset;
 	}
 	
-	public boolean hasCollided(int xa, int ya, int speed){
+	public boolean hasCollided(int xa, int ya, double speed){
 		for(Collider<T> collider : Game.colliders){
 			if(!collider.equals(this)){
 				if(this.x + xa * speed < collider.x + collider.width && this.x + xa * speed + this.width > collider.x){

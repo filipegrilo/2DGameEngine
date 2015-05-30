@@ -8,7 +8,7 @@ import org.test.phisics.BoxCollider;
 import org.test.phisics.Collider;
 
 public abstract class Mob extends Entity{
-	protected int speed;
+	protected double speed;
 	protected double health;
 	
 	protected String name;

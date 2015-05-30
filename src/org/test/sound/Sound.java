@@ -17,6 +17,7 @@ public class Sound implements Cloneable{
 	
 	public static Sound fireball = new Sound("/sound/Fireball.wav", -2.0f);
 	public static Sound dash = new Sound("/sound/Dash.wav", 6.0f);
+	public static Sound trail = new Sound("/sound/Trail.wav", 6.0f);
 	
 	public static Sound hurt = new Sound("/sound/Hurt.wav", 6.0f);
 	public static Sound heal = new Sound("/sound/Heal.wav", 6.0f);
